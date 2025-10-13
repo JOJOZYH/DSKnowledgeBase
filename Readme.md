@@ -1,3 +1,4 @@
+```mermaid
 graph TB
     subgraph Foundation["FOUNDATION"]
         MATH["Mathematics & Logic<br/>Probability Theory<br/>Optimization"]
@@ -47,3 +48,4 @@ graph TB
     style ECON fill:#f5e1ff
     style DM fill:#ffe1e1
     style AB fill:#fff9e1
+```
