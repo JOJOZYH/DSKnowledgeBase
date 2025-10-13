@@ -2,7 +2,7 @@
 title: SQL Querying Documentation (MySQL)
 author: Yuhan Zhou
 date: 10-09-2025
-purpose: a full comprehensive doc on how to query in SQL
+purpose: make a comprehensive doc on how to query in SQL
 ---
 
 # SQL Querying Documentation (MySQL)
