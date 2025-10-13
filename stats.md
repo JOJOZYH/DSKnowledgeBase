@@ -1,8 +1,16 @@
-# Probability Theory
+---
+title: Statistics
+Author: Yuhan Zhou
+Date: 10-09-2025
+Purpose: To keep a record of my statistical knowledge
+---
+# Statistics
 
-## Combinatorial Analysis (组合分析)
+## Probability Theory
 
-### Permutations (排列):
+### Combinatorial Analysis (组合分析)
+
+#### Permutations (排列):
 
 Order does matter
 
@@ -12,9 +20,9 @@ Order does matter
 
 - $\text{If } n=k,\ \text{then }(n-k)! = 0! = 1 \implies \frac{n!}{(n-k)!} = n!$
   
-  ### Combinations (组合)
-  
-  Order doesn't matter
+#### Combinations (组合)
+
+Order doesn't matter
 
 - **binomial coefficient**: How many ways can we choose $k$ items from a set of $n$ items (**order doesn't matter**)?
   
@@ -26,7 +34,7 @@ Order does matter
   - **Example**: Arranging 6 letters {a, b, c, d, e, f} into groups of sizes 2, 3, and 1:
     - $\binom{6}{2, 3, 1} = \frac{6!}{2! \times 3! \times 1!} = \frac{720}{12} = 60$ ways
 
-## Axioms of probability
+### Axioms of probability
 
 The **axioms of probability** (Kolmogorov axioms) are three fundamental rules that define a valid probability measure:
 
@@ -35,19 +43,20 @@ The **axioms of probability** (Kolmogorov axioms) are three fundamental rules th
 3. **Additivity**: For mutually exclusive events $A$ and $B$ (i.e., $A \cap B = \emptyset$), $P(A \cup B) = P(A) + P(B)$
    - Extended: if $A_1, A_2, \ldots$ are pairwise disjoint, then $P\left(\bigcup_{i=1}^{\infty} A_i\right) = \sum_{i=1}^{\infty} P(A_i)$
 
-## Conditional Probability & Independence
+### Conditional Probability & Independence
 
-## Chebyshev's Inequality
+### Chebyshev's Inequality
 
-## Weak law of Large Numbers
+### Weak law of Large Numbers
 
-## Central Limit Theorem
+### Central Limit Theorem
 
-## Transformation
+### Transformation
 
-# Statistical Inference
-## **Hypothesis Testing**
-### Key Concepts
+## Statistical Inference
+Note: I didn't include a "Frequentist" subcategory because I'm assuming any statistical inference method that did not labeled "Bayesian" is a Frequentitst method, and I've included a Bayesian subcategory as the group of the Bayesian methods
+### **Hypothesis Testing**
+#### Key Concepts
 
 - Definition: Statistical method used to make inferences about a population based on sample data
   - 通过分析样本来推断总体(Population)效果的统计学方法
@@ -66,7 +75,7 @@ The **axioms of probability** (Kolmogorov axioms) are three fundamental rules th
     - Assume rejecting false $H₀$ $\equiv$ classifing true positives (TP) rejecting true  $\implies$ $P(\text{correctly rejecting false }H_0)$$\iff$ $\frac{\text{TP}}{\text{TP + FN}}$
 - p-value: Probability of observing results at least as extreme as the test statistic under H₀
 
-### Testing Procedure
+#### Testing Procedure
 
 - Define hypotheses (H₀ and H₁)
 - Choose significance level (α), typically 0.05
@@ -75,7 +84,7 @@ The **axioms of probability** (Kolmogorov axioms) are three fundamental rules th
 - Determine p-value
 - Make decision: reject H₀ if p-value < α
 
-### GLRT (Generalized Likelihood Ratio Test)
+#### GLRT (Generalized Likelihood Ratio Test)
 
 - **Definition**: A general framework for constructing hypothesis tests by comparing likelihoods
 - **Test Statistic**: $\Lambda = \frac{\max_{\theta \in \Theta_0} L(\theta | data)}{\max_{\theta \in \Theta} L(\theta | data)}$ or $-2\log(\Lambda)$
@@ -83,7 +92,7 @@ The **axioms of probability** (Kolmogorov axioms) are three fundamental rules th
   - Denominator: Maximum likelihood under H₁ (unrestricted parameter space)
 - **Decision Rule**: Reject H₀ if λ is too small (or -2log(λ) is too large)
 
-#### Common Tests
+##### Common Tests
 
 Many classical tests are **special cases** of GLRT:
 
@@ -99,62 +108,4 @@ Many classical tests are **special cases** of GLRT:
 - Test statistic -2log(λ) follows χ² distribution asymptotically
 - Degrees of freedom = difference in number of parameters between H₁ and H₀
 
-## **A/B Test**
-
-- **Definition**: Experiment comparing two versions (A=control, B=variant) to determine which performs better
-- **Applications**: Website design, marketing campaigns, product features, pricing strategies
-
-#### A/B Test Process
-
-### Core Components
-1. Distribution Assumptions 
-2. Hypotheses (假设)
-
-3. **Formulation**:
-   - Define clear metric(s) of success (conversion rate, click-through rate, etc.)
-   - H₀: No difference between variants (μA = μB)
-   - H₁: There is a difference (μA ≠ μB) or directional (μA < μB)
-
-4. **Design**:
-   - Determine required sample size based on:
-     - Minimum detectable effect (MDE)
-     - Statistical power (typically 0.8)
-     - Significance level (typically 0.05)
-   - Random assignment of users/subjects to groups
-
-5. **Execution**:
-   - Run test until required sample size is reached
-   - Ensure no interference between groups (A/B isolation)
-
-6. **Analysis**:
-   - Calculate test statistic (typically z-test or t-test)
-   - Check for statistical significance
-   - Consider practical significance (effect size)
-
-#### Common Pitfalls
-
-- Stopping test too early ("peeking")
-- Multiple testing problem
-- Insufficient sample size
-- Seasonality effects
-- Improper randomization
-- Simpson's paradox
-
-#### Advanced Techniques
-
-- Multivariate testing (A/B/n tests)
-- Bayesian A/B testing
-- Multi-armed bandit algorithms
-- Sequential testing
-
-# Baysian Inference
-
-Statistical Inference
-├── Frequentist Inference
-│   ├── Hypothesis Testing (includes GLRT, t-test, etc.)
-│   ├── Confidence Intervals
-│   └── Point Estimation (MLE, etc.)
-└── Bayesian Inference
-    ├── Posterior Distributions
-    ├── Credible Intervals
-    └── Bayesian Decision Theory
+### Baysian Inference

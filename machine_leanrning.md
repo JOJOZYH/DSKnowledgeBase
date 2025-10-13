@@ -1,19 +1,26 @@
-# Supervised Learning (监督学习)
+---
+title: "Machine Learning"
+author: "Yuhan Zhou"
+date: "2025-10-10"
+---
+# Machine Learning
+
+## Supervised Learning (监督学习)
 
 Supervised learning uses labeled data to train models. The algorithm learns from input-output pairs to predict outcomes for new, unseen data.
 
-## Classification
+### Classification
 
 Classification predicts discrete categorical labels (e.g., spam/not spam, cat/dog).
 
-### KNN (K-Nearest Neighbors)
+#### KNN (K-Nearest Neighbors)
 - Uses distance metrics (usually Euclidean) to find nearest neighbors, prediction is made by majority voting among k neighbors
 
 **Parameters:**
 - `k`: Number of neighbors to consider
 - Distance metric: Euclidean, Manhattan, Minkowski
 
-### Logistic Regression
+#### Logistic Regression
 
 **How it works:**
 - Despite the name, used for classification
@@ -37,9 +44,9 @@ Classification predicts discrete categorical labels (e.g., spam/not spam, cat/do
 - Assumes linear relationship between features and log-odds
 - Limited to linear decision boundaries (unless feature engineering applied)
 
-### Decision Trees
+#### Decision Trees
 
-#### Bagging vs. Boosting
+##### Bagging vs. Boosting
 **How it works:**
 - Tree-like model where each node represents a feature test
 - Splits data based on information gain or Gini impurity
@@ -193,11 +200,11 @@ Actual  Pos      TP    |    FN
 - Uses all data for training and validation
 - Reduces overfitting to validation set
 
-## Regression
+### Regression
 
 Regression predicts continuous numerical values (e.g., house prices, temperature).
 
-### Linear Regression
+#### Linear Regression
 
 **Formula:** y = β₀ + β₁x₁ + β₂x₂ + ... + βₙxₙ + ε
 
@@ -211,7 +218,7 @@ Regression predicts continuous numerical values (e.g., house prices, temperature
 - **RMSE (Root Mean Squared Error)**: Square root of MSE (same units as target)
 - **MAE (Mean Absolute Error)**: Average absolute difference (robust to outliers)
 
-### KNN for Regression
+#### KNN for Regression
 
 **How it works:**
 - Same neighbor-finding as classification
@@ -224,7 +231,7 @@ Regression predicts continuous numerical values (e.g., house prices, temperature
 
 **Example:** Predicting house prices based on similar houses in neighborhood
 
-### Polynomial Regression
+#### Polynomial Regression
 
 **Concept:** Creates polynomial features to model non-linear relationships
 
@@ -232,7 +239,7 @@ Regression predicts continuous numerical values (e.g., house prices, temperature
 
 **Warning:** Higher degrees can lead to overfitting
 
-### Ridge Regression (L2 Regularization)
+#### Ridge Regression (L2 Regularization)
 
 **Formula:** Cost = MSE + α × Σ(βᵢ²)
 
@@ -240,7 +247,7 @@ Regression predicts continuous numerical values (e.g., house prices, temperature
 
 **When to use:** Multicollinearity, many features
 
-### Lasso Regression (L1 Regularization)
+#### Lasso Regression (L1 Regularization)
 
 **Formula:** Cost = MSE + α × Σ|βᵢ|
 
@@ -248,15 +255,15 @@ Regression predicts continuous numerical values (e.g., house prices, temperature
 
 **When to use:** High-dimensional data, feature selection needed
 
-# Unsupervised Learning (非监督学习)
+## Unsupervised Learning (非监督学习)
 
 Learning patterns from unlabeled data without predefined outcomes.
 
-## Clustering
+### Clustering
 
 Grouping similar data points together.
 
-### K-Means Clustering
+#### K-Means Clustering
 
 **Algorithm:**
 1. Initialize k random centroids
@@ -281,7 +288,7 @@ Grouping similar data points together.
 - Document clustering
 - Image compression
 
-### Hierarchical Clustering
+#### Hierarchical Clustering
 
 **Types:**
 - **Agglomerative**: Bottom-up (merge clusters)
@@ -301,7 +308,7 @@ Grouping similar data points together.
 - Computationally expensive for large datasets
 - Difficult to reverse decisions
 
-### DBSCAN (Density-Based Clustering)
+#### DBSCAN (Density-Based Clustering)
 
 **How it works:**
 - Groups points that are closely packed
@@ -320,9 +327,9 @@ Grouping similar data points together.
 - Anomaly detection
 - Geospatial data analysis
 
-### Evaluation
+#### Evaluation
 
-#### Silhouette Score
+##### Silhouette Score
 
 **Formula:** s(i) = (b(i) - a(i)) / max(a(i), b(i))
 
@@ -333,7 +340,7 @@ Grouping similar data points together.
 
 **When to use:** Comparing different k values or algorithms
 
-#### Elbow Method
+##### Elbow Method
 
 **Process:**
 - Plot within-cluster sum of squares (WCSS) vs k
@@ -341,15 +348,15 @@ Grouping similar data points together.
 
 **Limitation:** Elbow not always clear
 
-#### Davies-Bouldin Index
+##### Davies-Bouldin Index
 
 - Lower is better
 - Measures average similarity between clusters
 - Good for comparing clustering algorithms
 
-## Dimensionality Reduction
+### Dimensionality Reduction
 
-### PCA (Principal Component Analysis)
+#### PCA (Principal Component Analysis)
 
 **How it works:**
 - Finds orthogonal directions of maximum variance
@@ -376,7 +383,7 @@ Grouping similar data points together.
 - Feature extraction for deep learning
 - Exploratory data analysis
 
-### t-SNE (t-Distributed Stochastic Neighbor Embedding)
+#### t-SNE (t-Distributed Stochastic Neighbor Embedding)
 
 **Purpose:** Visualization of high-dimensional data
 
@@ -389,9 +396,9 @@ Grouping similar data points together.
 - Results vary with random seed
 - Not for feature reduction (only visualization)
 
-## Neural Networks
+### Neural Networks
 
-### Basics
+#### Basics
 
 **Architecture:**
 - **Input layer**: Receives features
@@ -415,7 +422,7 @@ Grouping similar data points together.
 - **Batch size**: Number of samples per update
 - **Epochs**: Full passes through training data
 
-### Convolutional Neural Networks (CNNs)
+#### Convolutional Neural Networks (CNNs)
 
 **Use case:** Image and spatial data
 
@@ -424,7 +431,7 @@ Grouping similar data points together.
 - Pooling layers: Reduce dimensions
 - Fully connected layers: Classification
 
-### Recurrent Neural Networks (RNNs)
+#### Recurrent Neural Networks (RNNs)
 
 **Use case:** Sequential data (text, time series)
 
@@ -432,7 +439,7 @@ Grouping similar data points together.
 - **LSTM** (Long Short-Term Memory): Handles long-term dependencies
 - **GRU** (Gated Recurrent Unit): Simpler than LSTM
 
-# Overfitting (过拟合)
+## Overfitting (过拟合)
 
 **Definition:** Model learns training data too well, including noise, and performs poorly on new data.
 
@@ -470,7 +477,7 @@ Test accuracy: 65%
 → Overfitting!
 ```
 
-# Underfitting (欠拟合)
+## Underfitting (欠拟合)
 
 **Definition:** Model is too simple to capture underlying patterns in data.
 
@@ -504,7 +511,7 @@ Test accuracy: 58%
 → Underfitting!
 ```
 
-# Bias-Variance Tradeoff
+## Bias-Variance Tradeoff
 
 **Bias:** Error from overly simplistic assumptions
 - High bias → Underfitting
@@ -522,7 +529,7 @@ Total Error = Bias² + Variance + Irreducible Error
 - Simple models: High bias, low variance
 - Complex models: Low bias, high variance
 
-# Feature Engineering
+## Feature Engineering
 
 **Critical for Industry Success:**
 
@@ -550,7 +557,7 @@ Total Error = Bias² + Variance + Irreducible Error
    - **Wrapper methods**: Forward/backward selection
    - **Embedded methods**: Lasso, tree-based importance
 
-# Model Selection & Deployment
+## Model Selection & Deployment
 
 **Train-Validation-Test Split:**
 - Training: 60-70% (fit model)

@@ -1,24 +1,30 @@
-# SQL Querying Documentation (MySQL)
+---
+title: SQL Querying Documentation (MySQL)
+author: Yuhan Zhou
+date: 10-09-2025
+purpose: a full comprehensive doc on how to query in SQL
+---
 
+# SQL Querying Documentation (MySQL)
 Note: you really only need the first 4 sections to be able to write 95% of all queries, the All Functions and All Keywords section is just there as a comprehensive record so maybe people can refer to it just in case.
 - [SQL Querying Documentation (MySQL)](#sql-querying-documentation-mysql)
   - [SQL Execution Orders](#sql-execution-orders)
   - [Core Clauses](#core-clauses)
     - [`SELECT`](#select)
-      - [Aggregate Functions](#aggregate-functions)
-        - [Common Aggregate Functions](#common-aggregate-functions)
-        - [`GROUP BY`](#group-by)
-        - [`HAVING`](#having)
-      - [Window Functions](#window-functions)
       - [Scalar Functions](#scalar-functions)
+      - [Window Functions](#window-functions)
+        - [`RANGE`/`ROWS`/`PRECEDING`/`CURRENT`](#rangerowsprecedingcurrent)
     - [`FROM`](#from)
       - [`JOIN`](#join)
       - [Cartesian Product](#cartesian-product)
     - [`WHERE`](#where)
-    - [`GROUP BY`](#group-by-1)
-    - [`HAVING`](#having-1)
+    - [`GROUP BY`](#group-by)
+      - [Aggregate Functions](#aggregate-functions)
+        - [Common Aggregate Functions](#common-aggregate-functions)
+    - [`HAVING`](#having)
     - [`LIMIT`](#limit)
       - [`OFFSET`](#offset)
+  - [SQL data types](#sql-data-types)
   - [Operators](#operators)
     - [Arithmetic](#arithmetic)
     - [Logical](#logical)
@@ -31,7 +37,9 @@ Note: you really only need the first 4 sections to be able to write 95% of all q
     - [`COALESCE()`](#coalesce)
     - [`GREATEST()` / `LEAST()`](#greatest--least)
   - [Date Arithmetics](#date-arithmetics)
-  - [All Functions](#all-functions)
+    - [Understanding each datetime object types and their connections](#understanding-each-datetime-object-types-and-their-connections)
+    - [Date Function Methods](#date-function-methods)
+  - [Functions](#functions)
     - [String \& Text](#string--text)
       - [`CONCAT()`](#concat)
       - [`CONCAT_WS()`](#concat_ws)
@@ -121,15 +129,20 @@ Note: you really only need the first 4 sections to be able to write 95% of all q
       - [Metadata \& session](#metadata--session)
       - [Utility](#utility)
       - [Cryptographic \& hash](#cryptographic--hash)
-  - [All Keywords](#all-keywords)
+  - [Keywords](#keywords)
     - [Datetime](#datetime)
-      - [IN](#in)
+      - [`INTERVAL`](#interval)
+      - [Datetime Object types](#datetime-object-types)
+        - [`DATE`, `DATETIME` and `TIME`](#date-datetime-and-time)
+        - [`TIMESTAMP`](#timestamp)
+      - [Time Interval Units](#time-interval-units)
+      - [Code Example](#code-example)
     - [Data retrieval \& composition](#data-retrieval--composition)
       - [`SELECT`](#select-1)
       - [`FROM`](#from-1)
       - [`WHERE`](#where-1)
-      - [`GROUP BY`](#group-by-2)
-      - [`HAVING`](#having-2)
+      - [`GROUP BY`](#group-by-1)
+      - [`HAVING`](#having-1)
       - [`ORDER BY`](#order-by)
       - [`LIMIT` / `OFFSET`](#limit--offset)
       - [`DISTINCT`](#distinct)
@@ -159,13 +172,6 @@ Note: you really only need the first 4 sections to be able to write 95% of all q
     - [Sorting \& null handling](#sorting--null-handling)
       - [`IS TRUE` / `IS FALSE` / `IS UNKNOWN`](#is-true--is-false--is-unknown)
       - [`NULLS FIRST` / `NULLS LAST`](#nulls-first--nulls-last)
-    - [Transactions \& session (query-adjacent)](#transactions--session-query-adjacent)
-      - [`START TRANSACTION` / `COMMIT` / `ROLLBACK`](#start-transaction--commit--rollback)
-      - [`SAVEPOINT` / `RELEASE SAVEPOINT` / `ROLLBACK TO SAVEPOINT`](#savepoint--release-savepoint--rollback-to-savepoint)
-      - [`SET`](#set)
-      - [`USE`](#use)
-      - [`EXPLAIN`](#explain)
-      - [`SHOW`](#show)
     - [Expressions \& conditional logic](#expressions--conditional-logic)
       - [`CASE`](#case-1)
       - [`CAST`](#cast)
@@ -182,45 +188,28 @@ Note: you really only need the first 4 sections to be able to write 95% of all q
       - [`SOUNDS LIKE`](#sounds-like)
     - [Set aggregation extensions](#set-aggregation-extensions)
       - [`WITH ROLLUP`](#with-rollup)
-    - [Data modification (DML)](#data-modification-dml)
-      - [`INSERT`](#insert-1)
-      - [`INSERT ... ON DUPLICATE KEY UPDATE`](#insert--on-duplicate-key-update)
-      - [`REPLACE`](#replace-1)
-      - [`UPDATE`](#update)
-      - [`DELETE`](#delete)
-    - [Locking \& concurrency](#locking--concurrency)
-      - [`FOR UPDATE` / `FOR SHARE`](#for-update--for-share)
-      - [`LOCK IN SHARE MODE`](#lock-in-share-mode)
-    - [Schema / DDL](#schema--ddl)
-      - [`CREATE`](#create)
-      - [`ALTER`](#alter)
-      - [`DROP`](#drop)
-      - [`TRUNCATE`](#truncate)
-      - [`RENAME`](#rename)
-    - [Constraints \& indexing](#constraints--indexing)
-      - [`PRIMARY KEY` / `UNIQUE` / `FOREIGN KEY`](#primary-key--unique--foreign-key)
-      - [`CHECK`](#check)
-      - [`INDEX` / `KEY`](#index--key)
-    - [Views \& temporary objects](#views--temporary-objects)
-      - [`CREATE VIEW` / `ALTER VIEW` / `DROP VIEW`](#create-view--alter-view--drop-view)
-      - [`TEMPORARY` (with `TABLE`)](#temporary-with-table)
-    - [Utility \& diagnostics](#utility--diagnostics)
-      - [`DESCRIBE` / `DESC`](#describe--desc)
-      - [`ANALYZE`](#analyze)
-      - [`OPTIMIZE`](#optimize)
+    - [Transactions \& session (query-adjacent)](#transactions--session-query-adjacent)
+      - [`START TRANSACTION` / `COMMIT` / `ROLLBACK`](#start-transaction--commit--rollback)
+      - [`SAVEPOINT` / `RELEASE SAVEPOINT` / `ROLLBACK TO SAVEPOINT`](#savepoint--release-savepoint--rollback-to-savepoint)
+      - [`SET`](#set)
+      - [`USE`](#use)
+      - [`EXPLAIN`](#explain)
+      - [`SHOW`](#show)
+
+---
 
 ## SQL Execution Orders
 
 SQL statements in MySQL follow a **logical execution order** that explains why some expressions are (or are not) legal in certain clauses:
 
-1. **`FROM` / `JOIN`** – Determine source tables/views; apply joins, subqueries, derived tables. See **[`FROM`](#from-1)**.
-2. **`WHERE`** – Row filtering (no aggregates/window allowed). See **[`WHERE`](#where-1)**.
-3. **`GROUP BY`** – Form groups for aggregation. See **[`GROUP BY`](#group-by-2)**.
-4. **Aggregate functions** (per-group): evaluated after `GROUP BY`, before output. See **[Aggregate Functions ](#aggregate-functions-1)**.
-5. **`HAVING`** – Group filtering (post-aggregation conditions). See **[`HAVING`](#having-2)**.
+1. **`FROM` / `JOIN`** – Determine source tables/views; apply joins, subqueries, derived tables. See **[`FROM`](#from)**.
+2. **`WHERE`** – Row filtering (no aggregates/window allowed). See **[`WHERE`](#where)**.
+3. **`GROUP BY`** – Form groups for aggregation. See **[`GROUP BY`](#group-by)**.
+4. **Aggregate functions** (per-group): evaluated after `GROUP BY`, before output. See **[Aggregate Functions](#aggregate-functions)**.
+5. **`HAVING`** – Group filtering (post-aggregation conditions). See **[`HAVING`](#having)**.
 6. **`SELECT`** – Projection:
-   1. **Scalar functions** (per-row): computed *after grouping*. See **[Scalar Functions](#scalar-functions)**.
-   2. **Window functions** (per-row over a window): computed *after* the entire SELECT list is built (but before ORDER BY for final output). See **[Window Functions ](#window-functions-1)**.
+   1. **Scalar functions** (per-row): computed *after grouping*. [Functions](#functions)
+   2. **Window functions** (per-row over a window): computed *after* the entire SELECT list is built (but before ORDER BY for final output). See **[Window Functions ](#window-functions)**.
 7. **`ORDER BY`** – Sort result; may reference aliases, aggregates, window results. See **[`ORDER BY`](#order-by)**.
 8. **`LIMIT` / `OFFSET`** – Return subset of sorted rows. See **[`LIMIT` / `OFFSET`](#limit--offset)** and **[`OFFSET`](#offset)**.
 
@@ -232,41 +221,27 @@ SQL statements in MySQL follow a **logical execution order** that explains why s
 
 Defines which columns/expressions to return. Can include scalar, aggregate, and window functions.
 
-#### Aggregate Functions
+#### Scalar Functions
 
-Perform calculations across multiple rows per group; return one value per group. (Expanded, titled entries appear under **[Functions](#all-functions)**.)
+Operate on single values per row. see more at [Functions](#functions)
 
-##### Common Aggregate Functions
-
-* `SUM()` – Sum of numeric expression. See **[`SUM()` ](#sum)**.
-* `COUNT()` – Row/non-NULL count. See **[`COUNT()` ](#count)**.
-* `AVG()` – Mean of values. See **[`AVG()` ](#avg)**.
-* `MIN()` / `MAX()` – Extremes. See **[`MIN()` ](#min)**, **[`MAX()` ](#max)**.
-* `STDDEV_POP()` / `STDDEV_SAMP()` – Standard deviation. See **[`STDDEV_POP()` ](#stddev_pop)**, **[`STDDEV_SAMP()` ](#stddev_samp)**.
-* `VAR_POP()` / `VAR_SAMP()` – Variance. See **[`VAR_POP()` ](#var_pop)**, **[`VAR_SAMP()` ](#var_samp)**.
-* `GROUP_CONCAT()` – Concatenate values per group. See **[`GROUP_CONCAT()` ](#group_concat)**.
-
-##### `GROUP BY`
-
-Form groups to aggregate. See **[`GROUP BY`](#group-by-2)**.
-
-##### `HAVING`
-
-Filter groups post-aggregation. See **[`HAVING`](#having-2)**.
-
-#### Window Functions
+#### Window Functions 
 
 Compute values over a related set of rows without collapsing them. (Full list under **[Window Functions](#window-functions-1)**).
 
 Common: `ROW_NUMBER()`, `RANK()`, `DENSE_RANK()`, `NTILE()`, `LAG()`, `LEAD()`, `FIRST_VALUE()`, `LAST_VALUE()`, `NTH_VALUE()`, `CUME_DIST()`, `PERCENT_RANK()`.
 
-#### Scalar Functions
+##### `RANGE`/`ROWS`/`PRECEDING`/`CURRENT`
+```sql
+SELECT AVG(value) OVER (
+    RANGE BETWEEN INTERVAL 7 DAY PRECEDING AND CURRENT ROW
+);
 
-Operate on single values per row. Full catalog under **[Scalar Functions](#scalar-functions)**.
+```
 
 ### `FROM`
 
-Declares data sources; supports joins, subqueries, derived tables, CTEs. See **[`FROM`](#from-1)** and join entries under **[All Keywords](#all-keywords)**.
+Declares data sources; supports joins, subqueries, derived tables, CTEs. See **[`FROM`](#from-1)** and join entries under **[Keywords](#keywords)**.
 
 #### `JOIN`
 
@@ -282,12 +257,25 @@ Row-level filtering before grouping; see **[`WHERE`](#where-1)**.
 
 ### `GROUP BY`
 
-Link: See **[Aggregate Functions ](#aggregate-functions-1)** and **[`GROUP BY`](#group-by-2)**.
+#### Aggregate Functions
 
-- Note: When using `GROUP BY`, all columns in the `SELECT` clause must either be:
+Perform calculations across multiple rows per group; return one value per group. See **[Aggregate Functions ](#aggregate-functions-1)**.
+
+##### Common Aggregate Functions
+
+* `SUM()` – Sum of numeric expression. See **[`SUM()` ](#sum)**.
+* `COUNT()` – Row/non-NULL count. See **[`COUNT()` ](#count)**.
+* `AVG()` – Mean of values. See **[`AVG()` ](#avg)**.
+* `MIN()` / `MAX()` – Extremes. See **[`MIN()` ](#min)**, **[`MAX()` ](#max)**.
+* `STDDEV_POP()` / `STDDEV_SAMP()` – Standard deviation. See **[`STDDEV_POP()` ](#stddev_pop)**, **[`STDDEV_SAMP()` ](#stddev_samp)**.
+* `VAR_POP()` / `VAR_SAMP()` – Variance. See **[`VAR_POP()` ](#var_pop)**, **[`VAR_SAMP()` ](#var_samp)**.
+* `GROUP_CONCAT()` – Concatenate values per group. See **[`GROUP_CONCAT()` ](#group_concat)**.
+
+> Note: When using `GROUP BY`, all columns in the `SELECT` clause must either be:
   1. Listed in the `GROUP BY` clause, OR
   2. Used within an aggregate function (like `COUNT()`, `SUM()`, `AVG()`, etc.)
-- Example:
+
+Code Examples:
 
 ```sql
 -- Valid: dept is in GROUP BY, COUNT(*) is an aggregate function
@@ -307,8 +295,8 @@ GROUP BY dept;
 ``` 
 
 ### `HAVING`
-
-Link: See **[Aggregate Functions ](#aggregate-functions-1)** and **[`HAVING`](#having-2)**.
+**[Aggregate Functions](#aggregate-functions-1)** and **[`HAVING`](#having-1)**.
+Filter used on column after aggregation
 
 ### `LIMIT`
 
@@ -316,10 +304,14 @@ Return at most N rows; see **[`LIMIT` / `OFFSET`](#limit--offset)**.
 
 #### `OFFSET`
 
-Skip N rows before returning results; see **[`OFFSET`](#offset)**.
+Skip N rows before returning results; see **[`OFFSET`](#limit--offset)**.
 
 ---
 
+## SQL data types
+blank
+
+---
 ## Operators
 
 ### Arithmetic
@@ -367,9 +359,77 @@ Return max/min across arguments. Example: `LEAST(GREATEST(v,lo),hi)`. Type: **Sc
 ---
 
 ## Date Arithmetics
-dt - INTERVAL other_column DAY AS result
+MySQL provides several ways to perform date arithmetic. Here's a comprehensive overview:
+see also [Arithmetic](#arithmetic-1)
+### Understanding each datetime object types and their connections
+### Date Function Methods 
+  1. `DATE_ADD()`/`ADDDATE()` and `DATE_SUB()`/`SUBDATE()` vs. `TIMESTAMPADD()`
+  ```sql
+  -- Add 3 days
+  SELECT DATE_ADD('2025-10-13', INTERVAL 3 DAY);
+  -- Subtract 3 days
+  SELECT DATE_SUB('2025-10-13', INTERVAL 3 DAY);
+  -- These are equivalent to DATE_ADD and DATE_SUB
+  SELECT ADDDATE('2025-10-13', INTERVAL 3 DAY);
+  SELECT SUBDATE('2025-10-13', INTERVAL 3 DAY);
+  -- Using column values with DATE_ADD
+  SELECT DATE_ADD(start_date, INTERVAL duration DAY) FROM events;
+  -- Using column values with DATE_SUB
+  SELECT DATE_SUB(end_date, INTERVAL duration DAY) FROM events;
+  -- Using variables
+  SET @days = 5;
+  SELECT DATE_ADD('2025-10-13', INTERVAL @days DAY);
+  SELECT DATE_SUB('2025-10-13', INTERVAL @days DAY);
+  ```
+  2. `DATEDIFF()` vs. `TIMESTAMPDIFF()` 
+  3. `NOW()` vs. `CURRENT_TIMESTAMP()`
+  > Some `DATE` styled funcitons and `TIMESTAMP` styled functions can work on both types of values and have **completely identical** functionality but **not all** TIMESTAMP functions can be used with `DATETIME`/`DATE`/`TIME` types
 
-## All Functions
+  - TIMESTAMP Family Functions
+
+  | Function Signature                | Description                               | DATE | TIME | DATETIME | TIMESTAMP |
+  |-----------------------------------|-------------------------------------------|:----:|:----:|:--------:|:---------:|
+  | TIMESTAMPADD(unit, int, datetime) | Add interval to date/time                 |      |      |    1     |    1      |
+  | TIMESTAMPDIFF(unit, dt1, dt2)     | Difference between two date/times in units|      |      |    1     |    1      |
+  | UNIX_TIMESTAMP(datetime)          | Convert to Unix timestamp                 |      |      |    1     |    1      |
+  | FROM_UNIXTIME(int)                | Convert Unix timestamp to datetime        |      |      |    1     |    1      |
+  | CONVERT_TZ(datetime, from, to)    | Convert datetime between time zones       |      |      |    1     |    1      |
+  | CURRENT_TIMESTAMP                 | Current date and time (session time zone) |      |      |    1     |    1      |
+  | UTC_TIMESTAMP                     | Current UTC date and time                 |      |      |    1     |    1      |
+  | UTC_DATE                          | Current UTC date                          |  1   |      |    1     |    1      |
+  | UTC_TIME                          | Current UTC time                          |      |  1   |    1     |    1      |
+
+
+  - DATE/DATETIME Family Functions
+
+  | Function Signature                 | Description                              | DATE | TIME | DATETIME | TIMESTAMP |
+  |------------------------------------|------------------------------------------|:----:|:----:|:--------:|:---------:|
+  | DATE_ADD(date, INTERVAL expr unit) | Add interval to date/time                |  1   |  1   |    1     |    1      |
+  | DATE_SUB(date, INTERVAL expr unit) | Subtract interval from date/time         |  1   |  1   |    1     |    1      |
+  | ADDDATE(date, INTERVAL expr unit)  | Alias for DATE_ADD                       |  1   |  1   |    1     |    1      |
+  | SUBDATE(date, INTERVAL expr unit)  | Alias for DATE_SUB                       |  1   |  1   |    1     |    1      |
+  | DATEDIFF(later_dt, dt)             | Difference in days between two dates     |  1   |      |    1     |    1      |
+  | EXTRACT(unit FROM date)            | Extract part of date/time                |  1   |  1   |    1     |    1      |
+  | YEAR(date)                         | Extract year                             |  1   |      |    1     |    1      |
+  | MONTH(date)                        | Extract month                            |  1   |      |    1     |    1      |
+  | DAY(date)                          | Extract day                              |  1   |      |    1     |    1      |
+  | HOUR(time)                         | Extract hour                             |      |  1   |    1     |    1      |
+  | MINUTE(time)                       | Extract minute                           |      |  1   |    1     |    1      |
+  | SECOND(time)                       | Extract second                           |      |  1   |    1     |    1      |
+  | DATE(datetime)                     | Get date part                            |  1   |      |    1     |    1      |
+  | TIME(datetime)                     | Get time part                            |      |  1   |    1     |    1      |
+  | DAYNAME(date)                      | Name of the day                          |  1   |      |    1     |    1      |
+  | MONTHNAME(date)                    | Name of the month                        |  1   |      |    1     |    1      |
+  | DAYOFYEAR(date)                    | Day of year                              |  1   |      |    1     |    1      |
+  | DAYOFMONTH(date)                   | Day of month                             |  1   |      |    1     |    1      |
+  | DAYOFWEEK(date)                    | Day of week                              |  1   |      |    1     |    1      |
+  | NOW()                              | Current date and time                    |      |      |    1     |    1      |
+
+  
+---
+
+
+## Functions
 
 > Each function is titled, explained, given a **one-line syntax example**, tagged by **Type** (Aggregate / Scalar / Window), and grouped by **what data it works on**.
 
@@ -563,8 +623,8 @@ Syntax: `ABS(x)`. Type: **Scalar**.
 * **`STR_TO_DATE()`** – `STR_TO_DATE(str, fmt)`.
   Type: **Scalar**.
 
-#### Arithmetic
-
+#### Arithmetic 
+see also [Date Arithmetics](#date-arithmetics)
 * **`DATEDIFF()`** – `DATEDIFF(d1,d2)`.
 * **`TIMESTAMPDIFF()`** – `TIMESTAMPDIFF(unit,dt1,dt2)`.
 * **`TIMESTAMPADD()`** – `TIMESTAMPADD(unit,interval,dt)`.
@@ -616,6 +676,7 @@ Syntax: `ABS(x)`. Type: **Scalar**.
 ---
 
 ### Aggregate Functions
+See [Aggregate Functions](#aggregate-functions)
 
 #### `COUNT()`
 
@@ -764,7 +825,7 @@ Syntax: `JSON_OBJECTAGG(key_expr, value_expr [ORDER BY expr ...] [LIMIT n])`.
 ---
 
 ### Window Functions
-
+[Window Functions](#window-functions)
 #### `COUNT()`
 
 Count rows within the window partition; `COUNT(expr)` counts non-`NULL` values. `DISTINCT` is **not** permitted in window form.
@@ -951,13 +1012,11 @@ Percent rank: `(rank - 1) / (rows_in_partition - 1)`.
 
 Syntax: `PERCENT_RANK() OVER (PARTITION BY ... ORDER BY ...)`.
 
----
 
-> Notes
->
-> * `COUNT(DISTINCT ...)` is not permitted with `OVER(...)` in MySQL.
-> * `GROUP_CONCAT`, `JSON_ARRAYAGG`, and `JSON_OBJECTAGG` are **aggregate-only** (no window form).
-> * Synonyms: `STD` and `STDDEV` ≡ `STDDEV_POP`; `VARIANCE` ≡ `VAR_POP`.
+> Note:
+> - `COUNT(DISTINCT ...)` is not permitted with `OVER(...)` in MySQL.
+> - `GROUP_CONCAT`, `JSON_ARRAYAGG`, and `JSON_OBJECTAGG` are **aggregate-only** (no window form).
+> - Synonyms: `STD` and `STDDEV` ≡ `STDDEV_POP`; `VARIANCE` ≡ `VAR_POP`.
 
 ---
 
@@ -986,11 +1045,68 @@ Syntax: `PERCENT_RANK() OVER (PARTITION BY ... ORDER BY ...)`.
 * **`AES_ENCRYPT(str,key)` / `AES_DECRYPT(crypt,key)`** – `AES_ENCRYPT('x','k')`.
   Type: **Scalar**.
 
-## All Keywords
+## Keywords
 
-> Each keyword is titled, briefly explained, and given a **one-line syntax example**. Where previously discussed, links point back to the relevant sections.
+> The keywords are group by **what data they work on**, one keyword may appear under multiple subsections, as they serve different purpose when used in different syntax
+
 ### Datetime 
-#### IN
+
+#### `INTERVAL`
+
+#### Datetime Object types
+
+##### `DATE`, `DATETIME` and `TIME`  
+These three types form the standard date and time storage options in MySQL
+- **`DATE`**:
+  - **Format**: `'YYYY-MM-DD'`
+  - **Example**: `'2025-10-13'`
+- **`DATETIME`**:
+  - **Format**: `'YYYY-MM-DD HH:MM:SS[.fraction]'`
+  - **Example**: `'2025-10-13 14:30:00'` or `'2025-10-13 14:30:00.123456'`
+- **`TIME`**:
+  - **Format**: `'HH:MM:SS[.fraction]'`
+  - **Example**: `'14:30:00'` or `'14:30:00.123456'` or `'-12:30:00'` (negative for durations)
+
+##### `TIMESTAMP`
+Can display date, time, or datetime, just like `DATE`, `DATETIME`, and `TIME`. The key difference lies in its time zone sensitivity and how it is stored internally
+ - Key Differences
+   - **Storage**: Internally, TIMESTAMP stores the value as the number of seconds since the Unix epoch (1970-01-01 00:00:00 UTC).
+   - **Time Zone Sensitivity**: When you insert a TIMESTAMP value, MySQL converts it from the session's time zone to UTC for storage. When you retrieve the value, MySQL converts it back to the session's time zone for display.
+
+#### Time Interval Units
+Used in date arithemetics
+ - `MICROSECOND`
+ - `SECOND`
+ - `SECOND_MICROSECOND`
+ - `MINUTE`
+ - `MINUTE_MICROSECOND`
+ - `MINUTE_SECOND`
+ - `HOUR`
+ - `HOUR_MICROSECOND`
+ - `HOUR_SECOND`
+ - `HOUR_MINUTE`
+ - `DAY`
+ - `DAY_MICROSECOND`
+ - `DAY_SECOND`
+ - `DAY_MINUTE`
+ - `DAY_HOUR`
+ - `WEEK`
+ - `MONTH`
+ - `QUARTER`
+ - `YEAR`
+ - `YEAR_MONTH`
+
+#### Code Example
+```sql
+SELECT 
+    DATE_ADD('2025-01-01', INTERVAL 5 DAY) AS add_days,
+    DATE_SUB('2025-01-01', INTERVAL 2 MONTH) AS sub_months,
+    DATE_ADD('2025-01-01 10:00:00', INTERVAL '1:30' HOUR_MINUTE) AS add_time,
+    DATE_ADD('2025-01-01', INTERVAL '2-3' YEAR_MONTH) AS add_year_month;
+``` 
+
+---
+
 ### Data retrieval & composition
 
 #### `SELECT` 
@@ -1011,7 +1127,7 @@ Create groups for aggregates. Example: `GROUP BY dept`. See **[`GROUP BY`](#grou
 
 #### `HAVING` 
 
-Filter groups after aggregation. Example: `HAVING COUNT(*)>1`. See **[`HAVING`](#having-1)**.
+Filter groups after aggregation. Example: `HAVING COUNT(*)>1`. See **[`HAVING`](#having)**.
 
 #### `ORDER BY` 
 
@@ -1131,34 +1247,6 @@ Optional null sort modifiers (supported in window `ORDER BY`). Example: `ORDER B
 
 ---
 
-### Transactions & session (query-adjacent)
-
-#### `START TRANSACTION` / `COMMIT` / `ROLLBACK` 
-
-Transactional control. Example: `START TRANSACTION` ... `COMMIT`.
-
-#### `SAVEPOINT` / `RELEASE SAVEPOINT` / `ROLLBACK TO SAVEPOINT` 
-
-Partial transaction control. Example: `SAVEPOINT s1`.
-
-#### `SET` 
-
-Set variables/modes. Example: `SET sql_mode='ONLY_FULL_GROUP_BY'`.
-
-#### `USE` 
-
-Change default database. Example: `USE dbname`.
-
-#### `EXPLAIN` 
-
-Show execution plan. Example: `EXPLAIN SELECT ...`.
-
-#### `SHOW` 
-
-Inspect metadata. Example: `SHOW TABLES`.
-
----
-
 ### Expressions & conditional logic 
 
 #### `CASE` 
@@ -1223,107 +1311,31 @@ Produce super-aggregate rows for `GROUP BY` hierarchies. Syntax: `GROUP BY c1, c
 
 ---
 
-### Data modification (DML) 
+### Transactions & session (query-adjacent)
 
-#### `INSERT` 
+#### `START TRANSACTION` / `COMMIT` / `ROLLBACK` 
 
-Insert new rows. Syntax: `INSERT INTO tbl (c1, c2) VALUES (v1, v2)`.
+Transactional control. Example: `START TRANSACTION` ... `COMMIT`.
 
-#### `INSERT ... ON DUPLICATE KEY UPDATE` 
+#### `SAVEPOINT` / `RELEASE SAVEPOINT` / `ROLLBACK TO SAVEPOINT` 
 
-Upsert behavior using unique/primary key conflicts. Syntax: `INSERT INTO t(k,v) VALUES(?,?) ON DUPLICATE KEY UPDATE v=VALUES(v)`.
+Partial transaction control. Example: `SAVEPOINT s1`.
 
-#### `REPLACE` 
+#### `SET` 
 
-Insert or replace rows on key conflict. Syntax: `REPLACE INTO tbl (k, v) VALUES (1, 'x')`.
+Set variables/modes. Example: `SET sql_mode='ONLY_FULL_GROUP_BY'`.
 
-#### `UPDATE` 
+#### `USE` 
 
-Update existing rows. Syntax: `UPDATE tbl SET col=expr WHERE predicate`.
+Change default database. Example: `USE dbname`.
 
-#### `DELETE` 
+#### `EXPLAIN` 
 
-Delete rows. Syntax: `DELETE FROM tbl WHERE predicate`.
+Show execution plan. Example: `EXPLAIN SELECT ...`.
 
----
+#### `SHOW` 
 
-### Locking & concurrency
-
-#### `FOR UPDATE` / `FOR SHARE` 
-
-Lock selected rows for subsequent updates / shared reads. Syntax: `SELECT ... FOR UPDATE`.
-
-#### `LOCK IN SHARE MODE` 
-
-Legacy shared lock modifier. Syntax: `SELECT ... LOCK IN SHARE MODE`.
-
----
-
-### Schema / DDL
-
-#### `CREATE` 
-
-Create database objects. Syntax: `CREATE TABLE t (id INT PRIMARY KEY, ...)`.
-
-#### `ALTER` 
-
-Modify database objects. Syntax: `ALTER TABLE t ADD COLUMN c INT`.
-
-#### `DROP` 
-
-Remove database objects. Syntax: `DROP TABLE t`.
-
-#### `TRUNCATE` 
-
-Quickly remove all rows from a table. Syntax: `TRUNCATE TABLE t`.
-
-#### `RENAME` 
-
-Rename database objects. Syntax: `RENAME TABLE old TO new`.
-
----
-
-### Constraints & indexing
-
-#### `PRIMARY KEY` / `UNIQUE` / `FOREIGN KEY` 
-
-Declare key/constraint semantics. Syntax: `CREATE TABLE t (id INT PRIMARY KEY, u INT UNIQUE, fk INT, FOREIGN KEY (fk) REFERENCES p(id))`.
-
-#### `CHECK` 
-
-Row-level constraint. Syntax: `CHECK (expr)`.
-
-#### `INDEX` / `KEY` 
-
-Define secondary index. Syntax: `CREATE INDEX idx ON t(col)`.
-
----
-
-### Views & temporary objects
-
-#### `CREATE VIEW` / `ALTER VIEW` / `DROP VIEW` 
-
-Define updatable or read-only views. Syntax: `CREATE VIEW v AS SELECT ...`.
-
-#### `TEMPORARY` (with `TABLE`) 
-
-Create a temporary table for the session. Syntax: `CREATE TEMPORARY TABLE tmp AS SELECT ...`.
-
----
-
-### Utility & diagnostics
-
-#### `DESCRIBE` / `DESC` 
-
-Show table column definitions. Syntax: `DESCRIBE tbl`.
-
-#### `ANALYZE` 
-
-Update table index statistics. Syntax: `ANALYZE TABLE tbl`.
-
-#### `OPTIMIZE` 
-
-Defragment/rebuild table and indexes. Syntax: `OPTIMIZE TABLE tbl`.
+Inspect metadata. Example: `SHOW TABLES`.
 
 ---
 Note: this documentation applys to MySQL 8.x
