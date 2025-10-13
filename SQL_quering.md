@@ -6,7 +6,7 @@ purpose: make a comprehensive doc on how to query in SQL
 ---
 
 # SQL Querying Documentation (MySQL)
-Note: you really only need the first 4 sections to be able to write 95% of all queries, the All Functions and All Keywords section is just there as a comprehensive record so maybe people can refer to it just in case.
+Note: the last 2 sections if trivial, don't read
 - [SQL Querying Documentation (MySQL)](#sql-querying-documentation-mysql)
   - [SQL Execution Orders](#sql-execution-orders)
   - [Core Clauses](#core-clauses)
