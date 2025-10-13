@@ -2,7 +2,7 @@ Hi, I'm Jojo, an international student that studied in the U.S. from highschool 
 
 Anyway, this is what I think (means only my opinion) needed to be a "Data scientist", also an outline of my education. 
 
-I'll be glad if this helped you
+I'll be glad if this helps
 
 ```mermaid
 graph TB
