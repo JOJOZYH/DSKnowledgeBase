@@ -209,8 +209,10 @@ SQL statements in MySQL follow a **logical execution order** that explains why s
 6. **`SELECT`** – Projection:
    1. **Scalar functions** (per-row): computed *after grouping*. [Functions](#functions)
    2. **Window functions** (per-row over a window): computed *after* the entire SELECT list is built (but before ORDER BY for final output). See **[Window Functions ](#window-functions)**.
-7. **`ORDER BY`** – Sort result; may reference aliases, aggregates, window results. See **[`ORDER BY`](#order-by)**.
-8. **`LIMIT` / `OFFSET`** – Return subset of sorted rows. See **[`LIMIT` / `OFFSET`](#limit--offset)** and **[`OFFSET`](#offset)**.
+7. **`UNION`/`UNION ALL`**
+   1. **Happens before ORDER BY**
+8. **`ORDER BY`** – Sort result; may reference aliases, aggregates, window results. See **[`ORDER BY`](#order-by)**.
+9.  **`LIMIT` / `OFFSET`** – Return subset of sorted rows. See **[`LIMIT` / `OFFSET`](#limit--offset)** and **[`OFFSET`](#offset)**.
 
 For example the following code snippet:
 ```sql
@@ -1216,7 +1218,8 @@ Predicate for subquery existence. Example: `WHERE EXISTS (SELECT 1 ...)`.
 
 #### `IN` / `NOT IN` 
 
-Membership predicate. Example: `WHERE col IN (1,2,3)`.
+Membership predicate. `WHERE col IN (...)`.
+**Tuple comparison**: `WHERE (col1, col2) IN (SELECT col3, col4 FROM ...)`
 
 #### `BETWEEN` / `NOT BETWEEN` 
 
