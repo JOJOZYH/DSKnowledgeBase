@@ -6,16 +6,16 @@ purpose: make a comprehensive doc on how to query in SQL
 ---
 
 # SQL Querying Documentation (MySQL)
-Note: the last 2 sections if trivial, don't read
+Note: the last 2 sections are trivial, don't read
 - [SQL Querying Documentation (MySQL)](#sql-querying-documentation-mysql)
   - [SQL Execution Orders](#sql-execution-orders)
   - [Core Clauses](#core-clauses)
     - [`SELECT`](#select)
-      - [**Scalar Functions**](#scalar-functions)
-      - [**Window Functions**](#window-functions)
+      - [Scalar Functions](#scalar-functions)
+      - [Window Functions](#window-functions)
     - [`FROM`](#from)
     - [`JOIN`](#join)
-      - [Types Of Joins](#types-of-joins)
+      - [Types of Join](#types-of-join)
     - [`WHERE`](#where)
     - [`GROUP BY`](#group-by)
       - [Aggregate Functions](#aggregate-functions)
@@ -212,6 +212,21 @@ SQL statements in MySQL follow a **logical execution order** that explains why s
 7. **`ORDER BY`** – Sort result; may reference aliases, aggregates, window results. See **[`ORDER BY`](#order-by)**.
 8. **`LIMIT` / `OFFSET`** – Return subset of sorted rows. See **[`LIMIT` / `OFFSET`](#limit--offset)** and **[`OFFSET`](#offset)**.
 
+For example the following code snippet:
+```sql
+SELECT id, g.name, AVG(grade) AS grade
+FROM grades AS g
+WHERE school_year = '2024'
+GROUP BY id, g.name
+HAVING MAX(grade) >= 80
+ORDER BY grade, id
+LIMIT 5
+OFFSET 1
+```
+
+Means:
+From the table named 'grades', aliased as 'g', within the 2024 school year, find the top 5 student with the highest grade averaged across all courses, ignoring the valedictorian. If there are students with duplicate grade, then rank by their id in asending order
+
 ---
 
 ## Core Clauses
@@ -220,9 +235,9 @@ SQL statements in MySQL follow a **logical execution order** that explains why s
 
 Defines which columns/expressions to return. 
 
-#### **Scalar Functions**
+#### Scalar Functions
  - Operate on single values per row. see more at [Functions](#functions)
-#### **Window Functions**
+#### Window Functions
  - Compute values over a related set of rows without collapsing them. (Full list under **[Window Functions](#window-functions-1)**)
  - Common: `ROW_NUMBER()`, `RANK()`, `DENSE_RANK()`, `NTILE()`, `LAG()`, `LEAD()`, `FIRST_VALUE()`, `LAST_VALUE()`, `NTH_VALUE()`, `CUME_DIST()`, `PERCENT_RANK()`.
  - `RANGE`/`ROWS`/`PRECEDING`/`CURRENT`
@@ -262,7 +277,7 @@ Declares data sources; supports joins, subqueries, derived tables, CTEs.
 
 ### `JOIN`
 Combine rows across tables by condition. 
-#### Types Of Joins
+#### Types of Join
 blank
 
 ### `WHERE`
