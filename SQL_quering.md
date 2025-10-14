@@ -11,19 +11,18 @@ Note: the last 2 sections if trivial, don't read
   - [SQL Execution Orders](#sql-execution-orders)
   - [Core Clauses](#core-clauses)
     - [`SELECT`](#select)
-      - [Scalar Functions](#scalar-functions)
-      - [Window Functions](#window-functions)
-        - [`RANGE`/`ROWS`/`PRECEDING`/`CURRENT`](#rangerowsprecedingcurrent)
+      - [**Scalar Functions**](#scalar-functions)
+      - [**Window Functions**](#window-functions)
     - [`FROM`](#from)
-      - [`JOIN`](#join)
-      - [Cartesian Product](#cartesian-product)
+    - [`JOIN`](#join)
+      - [Types Of Joins](#types-of-joins)
     - [`WHERE`](#where)
     - [`GROUP BY`](#group-by)
       - [Aggregate Functions](#aggregate-functions)
         - [Common Aggregate Functions](#common-aggregate-functions)
     - [`HAVING`](#having)
     - [`LIMIT`](#limit)
-      - [`OFFSET`](#offset)
+    - [`OFFSET`](#offset)
   - [SQL data types](#sql-data-types)
   - [Operators](#operators)
     - [Arithmetic](#arithmetic)
@@ -219,37 +218,52 @@ SQL statements in MySQL follow a **logical execution order** that explains why s
 
 ### `SELECT`
 
-Defines which columns/expressions to return. Can include scalar, aggregate, and window functions.
+Defines which columns/expressions to return. 
 
-#### Scalar Functions
-
-Operate on single values per row. see more at [Functions](#functions)
-
-#### Window Functions 
-
-Compute values over a related set of rows without collapsing them. (Full list under **[Window Functions](#window-functions-1)**).
-
-Common: `ROW_NUMBER()`, `RANK()`, `DENSE_RANK()`, `NTILE()`, `LAG()`, `LEAD()`, `FIRST_VALUE()`, `LAST_VALUE()`, `NTH_VALUE()`, `CUME_DIST()`, `PERCENT_RANK()`.
-
-##### `RANGE`/`ROWS`/`PRECEDING`/`CURRENT`
-```sql
-SELECT AVG(value) OVER (
-    RANGE BETWEEN INTERVAL 7 DAY PRECEDING AND CURRENT ROW
-);
-
-```
+#### **Scalar Functions**
+ - Operate on single values per row. see more at [Functions](#functions)
+#### **Window Functions**
+ - Compute values over a related set of rows without collapsing them. (Full list under **[Window Functions](#window-functions-1)**)
+ - Common: `ROW_NUMBER()`, `RANK()`, `DENSE_RANK()`, `NTILE()`, `LAG()`, `LEAD()`, `FIRST_VALUE()`, `LAST_VALUE()`, `NTH_VALUE()`, `CUME_DIST()`, `PERCENT_RANK()`.
+ - `RANGE`/`ROWS`/`PRECEDING`/`CURRENT`
+    ```sql
+    SELECT AVG(value) OVER (
+        RANGE BETWEEN INTERVAL 7 DAY PRECEDING AND CURRENT ROW
+    );
+    ```
 
 ### `FROM`
+Declares data sources; supports joins, subqueries, derived tables, CTEs.
 
-Declares data sources; supports joins, subqueries, derived tables, CTEs. See **[`FROM`](#from-1)** and join entries under **[Keywords](#keywords)**.
+> NOTE: Selecting multiple table forms a **Cartesian Product** of the tables, which is also equivalent to [`CROSS JOIN`](#cross-join)
+> Example: 
+> > If have table t1:
+> >
+> > | c1 |
+> > |----|
+> > | 1  |
+> > | 2  |
+> >
+> > t2:
+> >
+> > | c2 |
+> > |----|
+> > | 3  |
+> > | 4  |
+> >
+> > then `SELECT * FROM t1, t2` will output:
+> >
+> > | c1 | c2 |
+> > |----|----|
+> > | 1  | 3  |
+> > | 1  | 4  |
+> > | 2  | 3  |
+> > | 2  | 4  |
 
-#### `JOIN`
-
-Combine rows across tables by condition. See **[`JOIN` ](#join-1)** and specific join types.
-
-#### Cartesian Product
-
-Occurs when joining without a predicate; see **[`CROSS JOIN` ](#cross-join)**.
+### `JOIN`
+Combine rows across tables by condition. 
+#### Types Of Joins
+blank
 
 ### `WHERE`
 
@@ -300,9 +314,9 @@ Filter used on column after aggregation
 
 ### `LIMIT`
 
-Return at most N rows; see **[`LIMIT` / `OFFSET`](#limit--offset)**.
+Return at most N rows; see **[`LIMIT`](#limit--offset)**.
 
-#### `OFFSET`
+### `OFFSET`
 
 Skip N rows before returning results; see **[`OFFSET`](#limit--offset)**.
 
