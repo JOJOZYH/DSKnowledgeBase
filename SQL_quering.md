@@ -209,7 +209,7 @@ SQL statements in MySQL follow a **logical execution order** that explains why s
 6. **`SELECT`** – Projection:
    1. **Scalar functions** (per-row): computed *after grouping*. [Functions](#functions)
    2. **Window functions** (per-row over a window): computed *after* the entire SELECT list is built (but before ORDER BY for final output). See **[Window Functions ](#window-functions)**.
-7. **`UNION`/`UNION ALL`**
+7. **`UNION`/`UNION ALL`** - Vertically concatenate 2 table with same number of columns
    1. **Happens before ORDER BY**
 8. **`ORDER BY`** – Sort result; may reference aliases, aggregates, window results. See **[`ORDER BY`](#order-by)**.
 9.  **`LIMIT` / `OFFSET`** – Return subset of sorted rows. See **[`LIMIT` / `OFFSET`](#limit--offset)** and **[`OFFSET`](#offset)**.
