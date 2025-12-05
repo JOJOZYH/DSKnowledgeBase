@@ -46,6 +46,12 @@ Classification predicts discrete categorical labels (e.g., spam/not spam, cat/do
 
 #### Decision Trees
 
+##### splitting metrics
+1. Gini Impurity - Probability of misclassification
+2. Information Gain (Entropy) - Reduction in impurity after a split
+3. Entropy - Uncertainty or randomness
+
+
 ##### Bagging vs. Boosting
 **How it works:**
 - Tree-like model where each node represents a feature test
@@ -260,6 +266,12 @@ Regression predicts continuous numerical values (e.g., house prices, temperature
 Learning patterns from unlabeled data without predefined outcomes.
 
 ### Clustering
+
+#### Pure Categorial Clustes
+
+#### Numeric Clusters
+
+#### Mixed Clusters
 
 Grouping similar data points together.
 

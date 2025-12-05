@@ -55,3 +55,6 @@ graph TB
     style DM fill:#ffe1e1
     style AB fill:#fff9e1
 ```
+
+- [Machine Learning](./machine_learning.md)
+- [Statistics basics](./stats.md)
