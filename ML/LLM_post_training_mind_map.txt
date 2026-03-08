@@ -1,0 +1,170 @@
+```mathematica
+LLM Post-Training (Application / Post-Pretraining)
+│
+├── Post-Training with Weight Updates
+│   │
+│   ├── Supervised Fine-Tuning (SFT)
+│   │   ├── Instruction Tuning
+│   │   ├── Dialogue/Chat Tuning
+│   │   └── Task / Domain Fine-Tuning
+│   │
+│   ├── Parameter-Efficient Fine-Tuning (PEFT)
+│   │   ├── LoRA
+│   │   ├── Adapters
+│   │   ├── Prefix/Prompt Tuning
+│   │   └── QLoRA / Quantized Fine-Tuning
+│   │
+│   ├── Preference & Alignment Optimization (weight-updating alignment)
+│   │   ├── RLHF (human preference)
+│   │   ├── DPO / RLAIF (preference optimization variants)
+│   │   ├── Reward Modeling
+│   │   └── Constitutional AI / principle-based alignment
+│   │
+│   ├── Multimodal Post-Training (if applicable)
+│   │   ├── Vision-language instruction tuning
+│   │   └── Multimodal alignment / preference tuning
+│   │
+│   ├── Safety hooks (this stage)
+│   │   ├── Refusal & policy behavior shaping (SFT / preference tuning)
+│   │   ├── Bias/toxicity mitigation via data + objectives
+│   │   └── “Don’t break base skills” (avoid catastrophic forgetting)
+│   │
+│   └── Eval/Obs hooks (this stage)
+│       ├── Offline eval sets (task + safety regression)
+│       ├── Before/after comparison across capabilities
+│       └── Versioning: model checkpoints + dataset snapshots
+│
+├── Inference-Time / Deployment-Level Methods (No Weight Updates)
+│   │
+│   ├── Prompting & In-Context Techniques
+│   │   ├── Zero-shot / Few-shot
+│   │   ├── Structured outputs / schemas
+│   │   └── Reasoning scaffolds (scratchpads, self-check loops)
+│   │
+│   ├── Inference Optimization
+│   │   ├── Speculative decoding
+│   │   ├── Caching / batching
+│   │   ├── Quantized inference
+│   │   └── Routing (cheap model → expensive model fallback)
+│   │
+│   ├── Safety hooks (this stage)
+│   │   ├── System prompts + guardrails
+│   │   ├── Input/output filtering (policy checks)
+│   │   └── Format enforcement to reduce “action ambiguity”
+│   │
+│   └── Eval/Obs hooks (this stage)
+│       ├── Prompt regression tests (golden prompts)
+│       ├── Robustness tests (prompt variants / adversarial prompts)
+│       └── Latency/cost metrics (tokens, p95 latency)
+│
+├── Retrieval-Augmented Generation (RAG)
+│   │
+│   ├── Retrieval Pipeline
+│   │   ├── Data prep: chunking, metadata, ACLs
+│   │   ├── Embeddings / vector encoders
+│   │   ├── Index / vector DB
+|   |   ├── Query processing: rewrite / expand / decompose (optional)
+│   │   └── Retriever + reranker
+│   │
+│   ├── Context Construction
+│   │   ├── Top-k selection / dynamic context sizing
+│   │   ├── Citation / evidence formatting
+│   │   └── Long-context management (summaries, stitching)
+│   │
+│   ├── Variants
+│   │   ├── Hybrid retrieval (keyword + dense)
+│   │   ├── Multimodal RAG
+│   │   └── Agentic / Adaptive RAG
+│   │
+│   ├── Safety hooks (this stage)
+│   │   ├── Access control + data leakage prevention
+│   │   ├── Prompt-injection resistance (treat retrieved text as untrusted)
+│   │   └── Source filtering / allowlists
+│   │
+│   └── Eval/Obs hooks (this stage)
+│       ├── Retrieval metrics: relevance / precision-style checks
+│       ├── Grounding metrics: faithfulness to retrieved context
+│       ├── End-to-end RAG eval (question → retrieval → answer)
+│       └── Tracing: what was retrieved, what was used, why
+│
+├── Systems / Agent Layer (Architectural Integration)
+│   │
+│   ├── Agent Controllers & Planners
+│   │   ├── Plan / act / observe loop
+│   │   ├── Termination control (stop conditions)
+│   │   └── Retry / reflection policies
+│   │
+│   ├── Tools & Execution Interfaces
+│   │   ├── Search
+│   │   ├── DB / knowledge APIs
+│   │   ├── Browser automation
+│   │   ├── Code execution
+│   │   └── External services
+│   │
+│   ├── Memory & State
+│   │   ├── Short-term (context window)
+│   │   ├── Long-term (vector memory / logs)
+│   │   └── Episodic (task histories)
+│   │
+│   ├── Safety hooks (this stage)
+│   │   ├── Tool permissioning / sandboxing
+│   │   ├── Action validation (pre-checks) + human-in-the-loop gates
+│   │   └── Blast-radius control (rate limits, “safe mode”)
+│   │
+│   └── Eval/Obs hooks (this stage)
+│       ├── Task success rate (end-to-end)
+│       ├── Step success rate (per tool call)
+│       ├── Loop path tracing (why actions were taken)
+│       └── Failure taxonomy (tool error vs planning error vs retrieval error)
+│
+├── Safety, Reliability & Alignment (Cross-Cutting)
+│   │
+│   ├── Post-Training with Weight Updates
+│   │   ├── Align behavior via SFT / preference optimization
+│   │   └── Reduce harmful outputs via data + objectives
+│   │
+│   ├── Inference-Time / Deployment-Level
+│   │   ├── Guardrails + policy checks + structured outputs
+│   │   └── Reliability controls (fallbacks, constraints)
+│   │
+│   ├── RAG
+│   │   ├── Data governance (ACLs), leakage prevention
+│   │   ├── Prompt injection defenses in retrieved text
+│   │   └── Source trust policies
+│   │
+│   ├── Agents
+│   │   ├── Tool safety (permissions, sandbox, allowlists)
+│   │   ├── Safe planning (termination, retries, bounded actions)
+│   │   └── Human approval for high-risk actions
+│   │
+│   └── Production Operations
+│       ├── Abuse detection / rate limiting
+│       ├── Incident response / rollback / kill switch
+│       └── Continuous safety regression + red teaming
+│
+└── Evaluation & Observability (Cross-Cutting)
+    │
+    ├── Post-Training with Weight Updates
+    │   ├── Offline benchmarks + safety regressions
+    │   └── Compare checkpoints + measure tradeoffs
+    │
+    ├── Inference-Time / Deployment-Level
+    │   ├── Prompt unit tests + robustness tests
+    │   └── Cost/latency + format adherence metrics
+    │
+    ├── RAG
+    │   ├── Retrieval eval: relevance/utilization/completeness
+    │   ├── Generation eval: groundedness/faithfulness
+    │   └── End-to-end RAG eval pipelines + tracing
+    │
+    ├── Agents
+    │   ├── End-to-end task success + step-level correctness
+    │   ├── Tool-call accuracy + recovery from failures
+    │   └── Trajectories/trace logs for debugging
+    │
+    └── Production Observability
+        ├── Monitoring + drift detection + canary releases
+        ├── Feedback loops (user + human review)
+        └── Regression detection across versions
+
+```
